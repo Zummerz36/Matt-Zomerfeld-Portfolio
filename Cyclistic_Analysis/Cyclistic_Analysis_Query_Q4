@@ -1,0 +1,133 @@
+-- -- calculate the average difference between "start_time" and "end_time" in Cyclistic_Annual_Clean. present results in hh:mm:ss format
+SELECT
+  FORMAT_TIME( '%H:%M:%S', TIME( TIMESTAMP_SECONDS( CAST(AVG(TIMESTAMP_DIFF(end_time, start_time, SECOND)) AS INT64)))) AS average_difference
+FROM
+  `cyclistic-case-study-466019.Cyclystic_User_Data_Clean.Cyclistic_Q4_Clean`;
+
+
+
+-- Calculate maximum ride_time
+SELECT
+  MAX(ride_time) AS max_ride_time
+FROM
+  `cyclistic-case-study-466019.Cyclystic_User_Data_Clean.Cyclistic_Q4_Clean`;
+
+
+
+-- calculate the mode of "ride_time"
+SELECT
+  ride_time
+FROM
+  `cyclistic-case-study-466019.Cyclystic_User_Data_Clean.Cyclistic_Q4_Clean`
+GROUP BY
+  ride_time
+ORDER BY
+  COUNT(ride_time) DESC
+LIMIT
+  1;
+
+-- calculate the average "ride_time" for each week day
+SELECT
+  weekday,
+  FORMAT_TIME( '%H:%M:%S', TIME_ADD( TIME '00:00:00', INTERVAL CAST(AVG(TIMESTAMP_DIFF(end_time, start_time, SECOND)) AS INT64) SECOND)) AS average_ride_duration
+FROM
+  `cyclistic-case-study-466019.Cyclystic_User_Data_Clean.Cyclistic_Q4_Clean`
+GROUP BY
+  weekday
+ORDER BY
+  weekday;
+
+-- calculate average number of "ride_id" for each hour of the day
+SELECT
+  EXTRACT(HOUR
+  FROM
+    start_time) AS hour_of_day,
+  CAST(COUNT(trip_id) AS FLOAT64) / COUNT(DISTINCT DATE(start_time)) AS average_rides_per_day_in_hour
+FROM
+  `cyclistic-case-study-466019.Cyclystic_User_Data_Clean.Cyclistic_Q4_Clean`
+GROUP BY
+  hour_of_day
+ORDER BY
+  hour_of_day;
+
+
+
+-- calculate the average "ride_time" of rows marked customer in Cyclistic_Q4_Clean. present in hh:mm:ss format
+SELECT
+  FORMAT_TIME( '%H:%M:%S', TIME_ADD( TIME '00:00:00', INTERVAL CAST( AVG( CAST(SPLIT(ride_time, ':')[
+          OFFSET
+            (0)] AS INT64) * 3600 + CAST(SPLIT(ride_time, ':')[
+          OFFSET
+            (1)] AS INT64) * 60 + CAST(SPLIT(ride_time, ':')[
+          OFFSET
+            (2)] AS INT64)) AS INT64) SECOND)) AS average_ride_time
+FROM
+  `cyclistic-case-study-466019`.`Cyclystic_User_Data_Clean`.`Cyclistic_Q4_Clean`
+WHERE
+  user_type = 'Customer';
+
+
+
+-- calculate the average "ride_time" of rows marked "Subscriber" in the "user_type" column in Cyclistic_Q4_Clean. present in hh:mm:ss format
+SELECT
+  FORMAT_TIME( '%H:%M:%S', TIME_ADD( TIME '00:00:00', INTERVAL CAST( AVG( CAST(SPLIT(t0.ride_time, ':')[
+          OFFSET
+            (0)] AS INT64) * 3600 + CAST(SPLIT(t0.ride_time, ':')[
+          OFFSET
+            (1)] AS INT64) * 60 + CAST(SPLIT(t0.ride_time, ':')[
+          OFFSET
+            (2)] AS INT64)) AS INT64) SECOND)) AS average_ride_time
+FROM
+  `cyclistic-case-study-466019`.`Cyclystic_User_Data_Clean`.`Cyclistic_Q4_Clean` AS t0
+WHERE
+  LOWER(t0.user_type) = 'subscriber';
+
+
+-- calculate the max "ride_time" of rows marked customer in Cyclistic_Q4_Clean. present in hh:mm:ss format
+SELECT
+  MAX(ride_time) AS max_ride_time
+FROM
+  `cyclistic-case-study-466019`.`Cyclystic_User_Data_Clean`.`Cyclistic_Q4_Clean`
+WHERE
+  user_type = 'Customer';
+
+
+SELECT
+  MAX(ride_time) AS max_ride_time
+FROM
+  `cyclistic-case-study-466019`.`Cyclystic_User_Data_Clean`.`Cyclistic_Q4_Clean`
+WHERE
+  user_type = 'Subscriber';
+
+
+
+
+-- calculate the mode of "ride_time" rows marked customer in Cyclistic_Q4_Clean. present in hh:mm:ss format
+SELECT
+  ride_time
+FROM
+  `cyclistic-case-study-466019`.`Cyclystic_User_Data_Clean`.`Cyclistic_Q4_Clean`
+WHERE
+  LOWER(user_type) = 'customer'
+GROUP BY
+  ride_time
+ORDER BY
+  COUNT(ride_time) DESC
+LIMIT
+  1;
+
+
+
+-- calculate the mode of "ride_time" rows marked Subscriber in Cyclistic_Q4_Clean. present in hh:mm:ss format
+SELECT
+  ride_time
+FROM
+  `cyclistic-case-study-466019`.`Cyclystic_User_Data_Clean`.`Cyclistic_Q4_Clean`
+WHERE
+  user_type = 'Subscriber'
+GROUP BY
+  ride_time
+ORDER BY
+  COUNT(ride_time) DESC
+LIMIT
+  1;
