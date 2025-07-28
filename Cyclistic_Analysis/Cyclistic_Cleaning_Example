@@ -1,0 +1,20 @@
+SELECT
+-- remove duplicate
+  DISTINCT trip_id,
+  -- add column for day of the week
+  FORMAT_DATE('%A', DATE(start_time)) AS weekday,
+  start_time,
+  end_time,
+  bikeid,
+  -- reformat ride_time column to hh:mm:ss format
+  CONCAT( LPAD(CAST(FLOOR(tripduration / 3600) AS STRING), 2, '0'), ':', LPAD(CAST(FLOOR(MOD(CAST(tripduration AS INT64), 3600) / 60) AS STRING), 2, '0'), ':', LPAD(CAST(MOD(CAST(tripduration AS INT64), 60) AS STRING), 2, '0')) AS ride_time,
+  from_station_id,
+  from_station_name,
+  to_station_id,
+  to_station_name,
+  -- rename "usertype" column as "user_type"
+  `usertype` AS `user_type`,
+FROM
+  `cyclistic-case-study-466019`.`Cyclistic_User_Data`.`Cyclistic_Q4`
+
+
